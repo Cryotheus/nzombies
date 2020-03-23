@@ -1,11 +1,19 @@
 {
-	"title"		:	"nZombies 3",
+	"title"		:	"nZombies 3 plus Fixes",
 	"type"		:	"gamemode",
 	"tags"		:	[ "fun", "realism" ],
 	"ignore"	:
 	[
 		"*.psd",
 		"*.vcproj",
-		"*.svn*"
+		"*.svn*",
+		"*.bat",
+		"*.gma",
+		"*.pdn",
+		"*.txt",
+		"*.zip",
+		".git*",
+		"license",
+		"readme.md"
 	]
 }
