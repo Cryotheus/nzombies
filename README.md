@@ -3,6 +3,8 @@ nZombies
 
 A GM13 Nazi Zombies style (WIP) gamemode
 
+This fork will be my attempt at fixing the buggy code.
+
 Download folder and place it in garrysmod/garrysmod/addons
 Make sure the structure has a path to addon.json like this: garrysmod/garrysmod/addons/nzombies/addon.json
 
