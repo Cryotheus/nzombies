@@ -1,7 +1,7 @@
 -- Main Tables
 nzConfig = nzConfig or AddNZModule("Config")
 
---  Defaults
+function nzConfig.AddWeaponToBlacklist(class, remove) nzConfig.WeaponBlackList[class] = remove and nil or true end
 
 if not ConVarExists("nz_randombox_whitelist") then CreateConVar("nz_randombox_whitelist", 1, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE}) end
 if not ConVarExists("nz_downtime") then CreateConVar("nz_downtime", 45, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE, FCVAR_REPLICATED}) end
@@ -24,205 +24,102 @@ if not ConVarExists("nz_spawnpoint_update_rate") then CreateConVar("nz_spawnpoin
 if not ConVarExists("nz_rtv_time") then CreateConVar("nz_rtv_time", 45, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE}) end
 if not ConVarExists("nz_rtv_enabled") then CreateConVar("nz_rtv_enabled", 0, {FCVAR_SERVER_CAN_EXECUTE, FCVAR_ARCHIVE}) end
 
--- Zombie table - Moved to shared area for client collision prediction (barricades)
+nzConfig.AddWeaponToBlacklist("cw_base")
+nzConfig.AddWeaponToBlacklist("fas2_ammobox")
+nzConfig.AddWeaponToBlacklist("fas2_base")
+nzConfig.AddWeaponToBlacklist("fas2_ifak")
+nzConfig.AddWeaponToBlacklist("nz_grenade")
+nzConfig.AddWeaponToBlacklist("nz_multi_tool")
+nzConfig.AddWeaponToBlacklist("nz_one_inch_punch") -- Nope! You gotta give this with special map scripts
+nzConfig.AddWeaponToBlacklist("nz_perk_bottle")
+nzConfig.AddWeaponToBlacklist("nz_quickknife_crowbar")
+nzConfig.AddWeaponToBlacklist("nz_tool_base")
+nzConfig.AddWeaponToBlacklist("weapon_base")
+nzConfig.AddWeaponToBlacklist("weapon_dod_sim_base")
+nzConfig.AddWeaponToBlacklist("weapon_dod_sim_base_shot")
+nzConfig.AddWeaponToBlacklist("weapon_dod_sim_base_snip")
+nzConfig.AddWeaponToBlacklist("weapon_fists")
+nzConfig.AddWeaponToBlacklist("weapon_flechettegun")
+nzConfig.AddWeaponToBlacklist("weapon_medkit")
+nzConfig.AddWeaponToBlacklist("weapon_sim_admin")
+nzConfig.AddWeaponToBlacklist("weapon_sim_spade")
+
 nzConfig.ValidEnemies = {
 	["nz_zombie_walker"] = {
-		-- Set to false to disable the spawning of this zombie
 		Valid = true,
-		-- Allow you to scale damage on a per-hitgroup basis
-		ScaleDMG = function(zombie, hitgroup, dmginfo)
-			-- Headshots for double damage
-			if hitgroup == HITGROUP_HEAD then dmginfo:ScaleDamage(2) end
-		end,
-		-- Function runs whenever the zombie is damaged (NOT when killed)
+		ScaleDMG = function(zombie, hitgroup, dmginfo) if hitgroup == HITGROUP_HEAD then dmginfo:ScaleDamage(2) end end,
 		OnHit = function(zombie, dmginfo, hitgroup)
 			local attacker = dmginfo:GetAttacker()
-			-- If player is playing and is not downed, give points
-			if attacker:IsPlayer() and attacker:GetNotDowned() then
-				attacker:GivePoints(10)
-			end
+			
+			if attacker:IsPlayer() and attacker:GetNotDowned() then attacker:GivePoints(10) end
 		end,
-		-- Function is run whenever the zombie is killed
 		OnKilled = function(zombie, dmginfo, hitgroup)
 			local attacker = dmginfo:GetAttacker()
+			
 			if attacker:IsPlayer() and attacker:GetNotDowned() then
-				if dmginfo:GetDamageType() == DMG_CLUB then
-					attacker:GivePoints(130)
-				elseif hitgroup == HITGROUP_HEAD then
-					attacker:GivePoints(100)
-				else
-					attacker:GivePoints(50)
-				end
+				if dmginfo:GetDamageType() == DMG_CLUB then attacker:GivePoints(130)
+				elseif hitgroup == HITGROUP_HEAD then attacker:GivePoints(100)
+				else attacker:GivePoints(50) end
 			end
 		end
 	},
 	["nz_zombie_special_burning"] = {
 		Valid = true,
-		ScaleDMG = function(zombie, hitgroup, dmginfo)
-			if hitgroup == HITGROUP_HEAD then dmginfo:ScaleDamage(2) end
-		end,
+		ScaleDMG = function(zombie, hitgroup, dmginfo) if hitgroup == HITGROUP_HEAD then dmginfo:ScaleDamage(2) end end,
 		OnHit = function(zombie, dmginfo, hitgroup)
 			local attacker = dmginfo:GetAttacker()
-			if attacker:IsPlayer() and attacker:GetNotDowned() then
-				attacker:GivePoints(10)
-			end
+			
+			if attacker:IsPlayer() and attacker:GetNotDowned() then attacker:GivePoints(10) end
 		end,
 		OnKilled = function(zombie, dmginfo, hitgroup)
 			local attacker = dmginfo:GetAttacker()
+			
 			if attacker:IsPlayer() and attacker:GetNotDowned() then
-				if dmginfo:GetDamageType() == DMG_CLUB then
-					attacker:GivePoints(130)
-				elseif hitgroup == HITGROUP_HEAD then
-					attacker:GivePoints(100)
-				else
-					attacker:GivePoints(50)
-				end
+				if dmginfo:GetDamageType() == DMG_CLUB then attacker:GivePoints(130)
+				elseif hitgroup == HITGROUP_HEAD then attacker:GivePoints(100)
+				else attacker:GivePoints(50) end
 			end
 		end
 	},
 	["nz_zombie_special_dog"] = {
 		Valid = true,
 		SpecialSpawn = true,
-		ScaleDMG = function(zombie, hitgroup, dmginfo)
-			if hitgroup == HITGROUP_HEAD then dmginfo:ScaleDamage(2) end
-		end,
-		OnHit = function(zombie, dmginfo, hitgroup)
-			local attacker = dmginfo:GetAttacker()
-			if attacker:IsPlayer() and attacker:GetNotDowned() then
-				attacker:GivePoints(10)
-			end
-		end,
+		ScaleDMG = function(zombie, hitgroup, dmginfo) if hitgroup == HITGROUP_HEAD then dmginfo:ScaleDamage(2) end end,
+		OnHit = function(zombie, dmginfo, hitgroup) local attacker = dmginfo:GetAttacker() if attacker:IsPlayer() and attacker:GetNotDowned() then attacker:GivePoints(10) end end,
 		OnKilled = function(zombie, dmginfo, hitgroup)
 			local attacker = dmginfo:GetAttacker()
+			
 			if attacker:IsPlayer() and attacker:GetNotDowned() then
-				if dmginfo:GetDamageType() == DMG_CLUB then
-					attacker:GivePoints(130)
-				elseif hitgroup == HITGROUP_HEAD then
-					attacker:GivePoints(100)
-				else
-					attacker:GivePoints(50)
-				end
+				if dmginfo:GetDamageType() == DMG_CLUB then attacker:GivePoints(130)
+				elseif hitgroup == HITGROUP_HEAD then attacker:GivePoints(100)
+				else attacker:GivePoints(50) end
 			end
 		end
-	},
+	}
 }
-
--- Random Box
 
 nzConfig.WeaponBlackList = {}
-function nzConfig.AddWeaponToBlacklist( class, remove )
-	nzConfig.WeaponBlackList[class] = remove and nil or true
-end
 
-nzConfig.AddWeaponToBlacklist( "weapon_base" )
-nzConfig.AddWeaponToBlacklist( "weapon_fists" )
-nzConfig.AddWeaponToBlacklist( "weapon_flechettegun" )
-nzConfig.AddWeaponToBlacklist( "weapon_medkit" )
-nzConfig.AddWeaponToBlacklist( "weapon_dod_sim_base" )
-nzConfig.AddWeaponToBlacklist( "weapon_dod_sim_base_shot" )
-nzConfig.AddWeaponToBlacklist( "weapon_dod_sim_base_snip" )
-nzConfig.AddWeaponToBlacklist( "weapon_sim_admin" )
-nzConfig.AddWeaponToBlacklist( "weapon_sim_spade" )
-nzConfig.AddWeaponToBlacklist( "fas2_base" )
-nzConfig.AddWeaponToBlacklist( "fas2_ammobox" )
-nzConfig.AddWeaponToBlacklist( "fas2_ifak" )
-nzConfig.AddWeaponToBlacklist( "nz_multi_tool" )
-nzConfig.AddWeaponToBlacklist( "nz_grenade" )
-nzConfig.AddWeaponToBlacklist( "nz_perk_bottle" )
-nzConfig.AddWeaponToBlacklist( "nz_quickknife_crowbar" )
-nzConfig.AddWeaponToBlacklist( "nz_tool_base" )
-nzConfig.AddWeaponToBlacklist( "nz_one_inch_punch" ) -- Nope! You gotta give this with special map scripts
-
-nzConfig.AddWeaponToBlacklist( "cw_base" )
-
-nzConfig.WeaponWhiteList = {
-	"fas2_", "m9k_", "cw_",
-}
+nzConfig.WeaponWhiteList = {"fas2_", "m9k_", "cw_"}
 
 if SERVER then
-
 	nzConfig.RoundData = {}
-	--nzConfig.RoundData[1] = {["nz_zombie_walker"] = 100}
 
-	--[[
-	-- EXAMPLE of a round zombie config:
-	nzConfig.RoundData[ROUNDNUMBER] = {
-		-- define normal zombies and theri spawn chances
-		normalTypes = {
-			["nz_zombie_walker"] = {
-				chance = 100,
-			},
-		},
-		-- (optional) how many normal zombies will spawn this wil overwrite the default curves
-		normalCount = 50,
-
-		-- (optional) modify teh count witha  function ratehr than a fixed amount
-		-- if both normalCount and normalCountMod are set the gamemode will ignore normalCount
-		normalCountMod = function(original) return orignal / 2 end,
-
-		-- (optional) spawn delay
-		-- this will spawn the zombies in a 3 second intervall
-		normalDelay = 3,
-
-		-- special zombies (different spawnpoint usually in front of barricades)
-		-- this will spawn 10 hellhounds in additon to the normal zombies
-		specialTypes = {
-			["nz_zombie_special_dog"] = {
-				chance = 100,
-			},
-
-		},
-		-- (optional) not required but recommended if this is not set teh zombie amount will be doubled
-		specialCount = 10
-		-- (optional) flag this round as special (this will trigger fog etc.)
-		special = true
-	}
-	]]--
-
-	nzConfig.RoundData[1] = {
-		normalTypes = {
-			["nz_zombie_walker"] = {
-				chance = 100,
-			},
-		},
-	}
-	nzConfig.RoundData[2] = {
-		normalTypes = {
-			["nz_zombie_walker"] = {
-				chance = 100,
-			},
-		},
-	}
-	nzConfig.RoundData[13] = {
-		normalTypes = {
-			["nz_zombie_walker"] = {
-				chance = 75,
-			},
-			["nz_zombie_special_burning"] = {
-				chance = 25,
-			},
-		},
-	}
-	nzConfig.RoundData[14] = {
-		normalTypes = {
-			["nz_zombie_walker"] = {
-				chance = 100,
-			},
-		},
-	}
-	nzConfig.RoundData[23] = {
-		normalTypes = {
-			["nz_zombie_walker"] = {
-				chance = 90,
-			},
-			["nz_zombie_special_burning"] = {
-				chance = 10,
-			},
-		},
-	}
-
-	-- Player Class
-	nzConfig.BaseStartingWeapons = {"fas2_glock20"} -- "fas2_p226", "fas2_ots33", "fas2_glock20" "weapon_pistol"
-	-- nzConfig.CustomConfigStartingWeps = true -- If this is set to false, the gamemode will avoid using custom weapons in configs
-
+	--[[Available fields:
+	normalCount		[optional][number]		:	how many of the normalTypes zombies will spawn. overrides the default curves
+	normalCountMod	[optional][function]	:	if you'd like to, you can use a function instead of a number to determine the amount of normalTypes zombies that will spawn. overrides the default curves and normalCount
+	normalDelay		[optional][number]		:	delay between spawns of the normalTypes zombies
+	normalTypes		[required][table]		:	table with keys determining the class and the value is a table with a chance key set to the chance, use this to choose what zombies spawn
+	special			[optional][bool]		:	if this is set, flags the round as special. fog will appear, the "FETCH ME THEIR SOOOUUULS" sound will play, etc.
+	specialCount	[optional][number]		:	how many of the specialTypes zombies will spawn. if this is not set the zombie amount will be doubled
+	specialTypes	[optional][table]		:	table with keys determining the class and the value is a table with a chance key set to the chance, use this to choose what zombies spawn]]
+	
+	nzConfig.RoundData[1] = {normalTypes = {["nz_zombie_walker"] = {chance = 100}}}
+	nzConfig.RoundData[2] = {normalTypes = {["nz_zombie_walker"] = {chance = 100}}}
+	nzConfig.RoundData[13] = {normalTypes = {["nz_zombie_walker"] = {chance = 75}, ["nz_zombie_special_burning"] = {chance = 25}}}
+	nzConfig.RoundData[14] = {normalTypes = {["nz_zombie_walker"] = {chance = 100}}}
+	nzConfig.RoundData[23] = {normalTypes = {["nz_zombie_walker"] = {chance = 90}, ["nz_zombie_special_burning"] = {chance = 10}}}
+	
+	--fas2_p226, fas2_ots33, fas2_glock20, weapon_pistol
+	nzConfig.BaseStartingWeapons = {"fas2_glock20"} 
 end
