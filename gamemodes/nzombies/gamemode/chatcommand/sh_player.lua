@@ -1,10 +1,5 @@
 function player.GetByName(name)
-	name = string.lower(name)
-	for _,v in ipairs(player.GetHumans()) do
-		if string.find(string.lower(v:Nick()), name, 1, true) != nil then
-			return v
-		end
-	end
-
+	for _, ply in ipairs(player.GetHumans()) do if string.find(string.lower(ply:Nick()), string.lower(name), 1, true) then return ply end end
+	
 	return nil
 end
