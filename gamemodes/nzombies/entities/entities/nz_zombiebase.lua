@@ -608,7 +608,7 @@ function ENT:OnInjured( dmgInfo )
 	self:EmitSound( soundName, 90 )
 end
 
-function ENT:OnZombieDeath()
+function ENT:OnZombieDeath(dmgInfo)
 	self:BecomeRagdoll(dmgInfo)
 end
 
@@ -622,7 +622,7 @@ function ENT:OnKilled(dmgInfo)
 	end
 
 	local headbone = self:LookupBone("ValveBiped.Bip01_Head1")
-	if !headbone then headbone = self:LookupBone("j_head") end
+	if not headbone then headbone = self:LookupBone("j_head") end
 	if headbone then
 		local headPos = self:GetBonePosition(headbone)
 		local dmgPos = dmgInfo:GetDamagePosition()
@@ -636,7 +636,7 @@ function ENT:OnKilled(dmgInfo)
 
 	self.ZombieAlive = false
 
-	hook.Call("OnZombieKilled", GAMEMODE, self, dmgInfo)
+	hook.Call("OnZombieKilled", GAMEMODE, self, dmgInfo:GetAttacker(), dmgInfo, util.QuickTrace(dmgInfo:GetDamagePosition(), dmgInfo:GetDamagePosition()).HitGroup)
 
 end
 
