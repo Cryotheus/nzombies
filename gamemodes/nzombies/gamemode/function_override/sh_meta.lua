@@ -3,7 +3,6 @@ local inviswalls = {
 	["invis_damage_wall"] = true,
 	["invis_wall"] = true,
 	["wall_block"] = true}
-local nz_pap_shooting_sound = CreateClientConVar("nz_pap_shooting_sound", "1", true, false, "Should the shooting sound overlay on Pack a Punch-ed weapons be used?", 0, 1)
 local playerMeta = FindMetaTable("Player")
 local wepMeta = FindMetaTable("Weapon")
 
@@ -107,6 +106,8 @@ if SERVER then
 		
 		fl_playerMeta_SetActiveWeapon(self, wep)
 	end
+else
+	local nz_pap_shooting_sound = CreateClientConVar("nz_pap_shooting_sound", "1", true, false, "Should the shooting sound overlay on Pack a Punch-ed weapons be used?", 0, 1)
 end
 
 function wepMeta:DefaultReload(act)

@@ -97,6 +97,16 @@ function meta:GiveMaxAmmo(papoverwrite)
 	ply:GiveAmmo(give_ammo, ammo_type)
 	ply:SetAmmo(max_ammo, ammo_type)
 	
+	if self:IsSpecial() then
+		local wepdata = self.NZSpecialWeaponData
+		
+		if not wepdata then return end
+		
+		local ammo = usesammo[self:GetSpecialCategory()] or wepdata.AmmoType
+		local maxammo = wepdata.MaxAmmo
+		
+		if ammo and maxammo then self.Owner:SetAmmo(maxammo, GetNZAmmoID(ammo) or ammo) end
+	end
 end
 
 --[[
@@ -113,15 +123,4 @@ if self:IsSpecial() then -- Give Max Ammo for special weapons when first getting
 		end
 	end
 end
---fixed version below]]
-
-if self:IsSpecial() then
-	local wepdata = self.NZSpecialWeaponData
-	
-	if not wepdata then return end
-	
-	local ammo = usesammo[self:GetSpecialCategory()] or wepdata.AmmoType
-	local maxammo = wepdata.MaxAmmo
-	
-	if ammo and maxammo then self.Owner:SetAmmo(maxammo, GetNZAmmoID(ammo) or ammo) end
-end
+--fixed version above]]

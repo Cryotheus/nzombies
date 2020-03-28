@@ -58,7 +58,7 @@ function SWEP:Deploy()
 end
 
 function SWEP:Equip( owner )
-	owner:SetActiveWeapon("nz_revive_morphine")
+	owner:SetActiveWeapon(owner:GetWeapon("nz_revive_morphine"))
 end
 
 function SWEP:PrimaryAttack()
