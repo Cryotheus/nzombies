@@ -106,25 +106,36 @@ if SERVER then
 		
 		fl_playerMeta_SetActiveWeapon(self, wep)
 	end
+	
+	function GM:EntityFireBullets(ent, data)
+		--fire the PaP shooting sound if the weapon is PaP'd
+		if ent:IsPlayer() then
+			local wep = ent:GetActiveWeapon()
+			
+			if IsValid(wep) and wep:HasNZModifier("pap") and not wep.IsMelee and not wep.IsKnife then ent:EmitSound("nz/effects/pap_shoot_glock20.wav", 60, 100, 0.7) end
+		end
+		
+		if ent:IsPlayer() and ent:HasPerk("dtap2") then return true end
+	end
 else
 	local nz_pap_shooting_sound = CreateClientConVar("nz_pap_shooting_sound", "1", true, false, "Should the shooting sound overlay on Pack a Punch-ed weapons be used?", 0, 1)
+	
+	function GM:EntityFireBullets(ent, data)
+		--fire the PaP shooting sound if the weapon is PaP'd
+		if ent:IsPlayer() then
+			local wep = ent:GetActiveWeapon()
+			
+			if IsValid(wep) and wep:HasNZModifier("pap") and nz_pap_shooting_sound:GetBool() and not wep.IsMelee and not wep.IsKnife then ent:EmitSound("nz/effects/pap_shoot_glock20.wav", 60, 100, 0.7) end
+		end
+		
+		if ent:IsPlayer() and ent:HasPerk("dtap2") then return true end
+	end
 end
 
 function wepMeta:DefaultReload(act)
 	if IsValid(self.Owner) and self.Owner:HasPerk("speed") then return end
 	
 	fl_wepMeta_DefaultReload(self, act)
-end
-
-function GM:EntityFireBullets(ent, data)
-	--fire the PaP shooting sound if the weapon is PaP'd
-	if ent:IsPlayer() then
-		local wep = ent:GetActiveWeapon()
-		
-		if IsValid(wep) and wep:HasNZModifier("pap") and nz_pap_shooting_sound:GetBool() and not wep.IsMelee and not wep.IsKnife then ent:EmitSound("nz/effects/pap_shoot_glock20.wav", 60, 100, 0.7) end
-	end
-	
-	if ent:IsPlayer() and ent:HasPerk("dtap2") then return true end
 end
 
 function game.AddAmmoType(tbl)
