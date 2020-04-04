@@ -8,7 +8,7 @@ nzTools:CreateTool("door", {
 		PrintTable(data)
 		local ent = tr.Entity
 		if !IsValid(ent) then return end
-		if ent:IsDoor() or ent:IsBuyableProp() or ent:IsButton() then
+		if ent:IsDoor() or ent:IsBuyableProp() or ent:IsButton() or ent:GetClass() == "func_brush" then
 			nzDoors:CreateLink(ent, data.flags)
 		else
 			ply:ChatPrint("That is not a valid door.")

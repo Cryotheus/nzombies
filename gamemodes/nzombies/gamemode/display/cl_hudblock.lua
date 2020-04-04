@@ -1,11 +1,9 @@
-local blockedhuds = {
-	["CHudAmmo"] = true,
-	["CHudSecondaryAmmo"] = true,
-	["CHudBattery"] = true,
+local hud_functions = {
+	["CHudAmmo"] = function() return false end,
+	["CHudBattery"] = function() return LocalPlayer():Health() > 0 end,
+	["CHudWeaponSelection"] = function() return not nzRound:InProgress() and not nzRound:InState(ROUND_GO) end,
+	["CHudHealth"] = function() return GetConVar("nz_bloodoverlay"):GetBool() end,
+	["CHudSecondaryAmmo"] = function() return false end
 }
 
-hook.Add( "HUDShouldDraw", "HideHUD", function( name )
-	if blockedhuds[name] then return false end
-	if name == "CHudWeaponSelection" then return !nzRound:InProgress() and !nzRound:InState(ROUND_GO) end -- Has it's own value
-	if name == "CHudHealth" then return !GetConVar("nz_bloodoverlay"):GetBool() end -- Same
-end )
+hook.Add("HUDShouldDraw", "HideHUD", function(name) if hud_functions[name] then return hud_functions[name]() end end)
