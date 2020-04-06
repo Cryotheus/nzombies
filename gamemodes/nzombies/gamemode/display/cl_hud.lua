@@ -3,8 +3,7 @@ nzDisplay = nzDisplay or AddNZModule("Display")
 local blockedweps = {
 	["nz_revive_morphine"] = true,
 	["nz_packapunch_arms"] = true,
-	["nz_perk_bottle"] = true,
-}
+	["nz_perk_bottle"] = true}
 local bloodline_points = Material("bloodline_score2.png", "unlitgeneric smooth")
 local bloodline_gun = Material("cod_hud.png", "unlitgeneric smooth")
 local grenade_icon = Material("grenade-256.png", "unlitgeneric smooth")
@@ -19,8 +18,7 @@ local round_white = 0
 local vulture_textures = {
 	["wall_buys"] = Material("vulture_icons/wall_buys.png", "smooth unlitgeneric"),
 	["random_box"] = Material("vulture_icons/random_box.png", "smooth unlitgeneric"),
-	["wunderfizz_machine"] = Material("vulture_icons/wunderfizz.png", "smooth unlitgeneric"),
-}
+	["wunderfizz_machine"] = Material("vulture_icons/wunderfizz.png", "smooth unlitgeneric")}
 
 local fl_draw_SimpleText = draw.SimpleText
 local fl_draw_SimpleTextOutlined = draw.SimpleTextOutlined
@@ -34,18 +32,6 @@ local fl_table_insert = table.insert
 local point_notif_font = "nz.display.hud.points"
 local round_hud_font = "nz.display.hud.rounds"
 local score_hud_font = "nz.display.hud.small"
-
---[[local bloodDecals = {
-	Material("decals/blood1"),
-	Material("decals/blood2"),
-	Material("decals/blood3"),
-	Material("decals/blood4"),
-	Material("decals/blood5"),
-	Material("decals/blood6"),
-	Material("decals/blood7"),
-	Material("decals/blood8"),
-	nil
-}]]
 
 CreateClientConVar("nz_hud_points_show_names", "1", true, false)
 
