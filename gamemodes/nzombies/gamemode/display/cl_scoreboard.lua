@@ -284,7 +284,7 @@ local SCORE_BOARD = {
 		self:SetSize(800, ScrH() - 200)
 		self:SetPos(ScrW() * 0.5 - 400, 100)
 	end,
-	Paint = function(self, w, h) --DrawBlurRect(0, 0, w, h) end,
+	Paint = function(self, w, h) end,
 	Think = function(self, w, h)
 		self.Name:SetText(GetHostName()) --probably a less expensive way to do this
 		
@@ -300,7 +300,7 @@ local SCORE_BOARD = {
 	end
 }
 
-SCORE_BOARD = vgui.RegisterTable( SCORE_BOARD, "EditablePanel" )
+SCORE_BOARD = vgui.RegisterTable(SCORE_BOARD, "EditablePanel")
 
 function GM:ScoreboardShow()
 	if not IsValid(g_Scoreboard) then g_Scoreboard = vgui.CreateFromTable(SCORE_BOARD) end
@@ -312,6 +312,5 @@ function GM:ScoreboardShow()
 	end
 end
 
-function GM:ScoreboardHide() if IsValid( g_Scoreboard) then g_Scoreboard:Hide() end end
-
+function GM:ScoreboardHide() if IsValid(g_Scoreboard) then g_Scoreboard:Hide() end end
 function GM:HUDDrawScoreBoard() end

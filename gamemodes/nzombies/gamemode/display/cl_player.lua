@@ -3,8 +3,8 @@ local function shuffle(source)
 	local shuffled = {}
 	local source_copy_count = table.Count(source_copy)
 	
-	while source_copy_count > 0 then
-		local index = math.random(source_copy)
+	while source_copy_count > 0 do
+		local index = math.random(source_copy_count)
 		
 		table.insert(shuffled, source_copy[index])
 		table.remove(source_copy, index)
@@ -19,7 +19,8 @@ local blood_decals = shuffle{
 	Material("bloodline_score1.png", "unlitgeneric smooth"),
 	Material("bloodline_score2.png", "unlitgeneric smooth"),
 	Material("bloodline_score3.png", "unlitgeneric smooth"),
-	Material("bloodline_score4.png", "unlitgeneric smooth")
+	Material("bloodline_score4.png", "unlitgeneric smooth"),
+	nil --we HAVE to have nil here because Material has two return values and that second value gets placed in the next slot of the table
 }
 
 local player_colors = shuffle{
@@ -37,6 +38,8 @@ local player_colors = shuffle{
 	Color(224, 224, 224),
 	Color(144, 164, 174)
 }
+
+PrintTable(blood_decals)
 
 function player.GetBloodByIndex(index) return blood_decals[(index - 1) % #blood_decals + 1] end
 function player.GetColorByIndex(index) return player_colors[(index - 1) % #player_colors + 1] end

@@ -255,26 +255,6 @@ local function DrawPointsNotification()
 	end
 end
 
--- Now handled via perks individual icon table entries
---[[local perk_icons = {
-	["jugg"] = Material("perk_icons/jugg.png", "smooth unlitgeneric"),
-	["speed"] = Material("perk_icons/speed.png", "smooth unlitgeneric"),
-	["dtap"] = Material("perk_icons/dtap.png", "smooth unlitgeneric"),
-	["revive"] = Material("perk_icons/revive.png", "smooth unlitgeneric"),
-	["dtap2"] = Material("perk_icons/dtap2.png", "smooth unlitgeneric"),
-	["staminup"] = Material("perk_icons/staminup.png", "smooth unlitgeneric"),
-	["phd"] = Material("perk_icons/phd.png", "smooth unlitgeneric"),
-	["deadshot"] = Material("perk_icons/deadshot.png", "smooth unlitgeneric"),
-	["mulekick"] = Material("perk_icons/mulekick.png", "smooth unlitgeneric"),
-	["cherry"] = Material("perk_icons/cherry.png", "smooth unlitgeneric"),
-	["tombstone"] = Material("perk_icons/tombstone.png", "smooth unlitgeneric"),
-	["whoswho"] = Material("perk_icons/whoswho.png", "smooth unlitgeneric"),
-	["vulture"] = Material("perk_icons/vulture.png", "smooth unlitgeneric"),
-
-	-- Only used to see PaP through walls with Vulture Aid
-	["pap"] = Material("vulture_icons/pap.png", "smooth unlitgeneric"),
-}]]
-
 local function PerksHud()
 	local scale = (ScrW()/1920 + 1)/2
 	local w = -20
@@ -468,11 +448,11 @@ local function ParseAmmoName(str)
 	if slot then
 		for _, v in pairs(LocalPlayer():GetWeapons()) do
 			if v:GetNWInt("SwitchSlot", -1) == slot then
-				if v.Primary and v.Primary.OldAmmo then return "#"..v.Primary.OldAmmo.."_ammo" end
+				if v.Primary and v.Primary.OldAmmo then return "#" .. v.Primary.OldAmmo .. "_ammo" end
 				
 				local wep = weapons.Get(v:GetClass())
 				
-				if wep and wep.Primary and wep.Primary.Ammo then return "#"..wep.Primary.Ammo.."_ammo" end
+				if wep and wep.Primary and wep.Primary.Ammo then return "#" .. wep.Primary.Ammo .. "_ammo" end
 				
 				return v:GetPrintName() .. " Ammo"
 			end
@@ -510,7 +490,7 @@ function GM:HUDAmmoPickedUp(itemname, amount)
 	
 	fl_surface_SetFont(pickup.font)
 	
-	pickup.width, pickup.height = fl_draw_SimpleText(pickup.name) --we can do this?
+	pickup.width, pickup.height = fl_draw_SimpleText(pickup.name)
 	pickup.xwidth = fl_draw_SimpleText(pickup.amount)
 	pickup.width = pickup.width + pickup.xwidth + 16
 

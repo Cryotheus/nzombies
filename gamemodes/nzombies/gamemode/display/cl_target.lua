@@ -98,8 +98,8 @@ local trace_ents = {
 }
 
 local door_trace_ents = {
-	"func_brush" = true,
-	"class C_BaseEntity" = true
+	["func_brush"] = true,
+	["class C_BaseEntity"] = true
 }
 
 local function GetTarget()
