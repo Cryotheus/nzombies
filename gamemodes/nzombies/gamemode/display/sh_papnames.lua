@@ -53,8 +53,7 @@ nz.Display_PaPNames = {
 	["cw_mk11"] = "Mr.Kill 115",
 	["cw_ppsh-41"] = "The Reaper",
 	["cw_xm1014"] = "XTREME1015",
-	["cw_dz_ru556"] = "Codename Rul3R-5000",
-	["tfa_jetgun"] = "S.U.C.C. Machine"
+	["cw_dz_ru556"] = "Codename Rul3R-5000"
 }
 
 function AddPackAPunchName(class, papname) -- The function also works with display names just like above

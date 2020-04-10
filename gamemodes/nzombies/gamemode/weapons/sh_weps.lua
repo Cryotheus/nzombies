@@ -56,7 +56,8 @@ function wepMeta:GetPrintName()
 	local name = old(self)
 	if !name or name == "" then name = self:GetClass() end
 	if self:HasNZModifier("pap") then
-		name = self.NZPaPName or nz.Display_PaPNames[self:GetClass()] or nz.Display_PaPNames[name] or "Upgraded "..name
+		name = nz.Display_PaPNames[self:GetClass()] or nz.Display_PaPNames[name] or self.NZPaPName or "Upgraded " .. name
 	end
+	
 	return name
 end

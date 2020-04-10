@@ -1,80 +1,47 @@
---
 local revivefailtime = 0.2
 
-if SERVER then
-	hook.Add("Think", "CheckDownedPlayersTime", function()
-		for k,v in pairs(nzRevive.Players) do
-			-- The time it takes for a downed player to die - Prevent dying if being revived
-			if CurTime() - v.DownTime >= GetConVar("nz_downtime"):GetFloat() and !v.ReviveTime then
-				local ent = Entity(k)
-				if ent.KillDownedPlayer then
-					ent:KillDownedPlayer()
-				else
-					-- If it's a non-player entity, do the same thing just to clean up the table
-					local revivor = v.RevivePlayer
-					if IsValid(revivor) then
-						revivor:StripWeapon("nz_revive_morphine")
-					end
-					nzRevive.Players[k] = nil
-				end
-			end
-		end
-	end)
-end
-
 function nzRevive.HandleRevive(ply, ent)
-	--print(ply, ent)
-
-	-- Make sure other downed players can't revive other downed players next to them
-	if !nzRevive.Players[ply:EntIndex()] then
-
-		local tr = util.QuickTrace(ply:EyePos(), ply:GetAimVector()*100, ply)
-		local dply = tr.Entity
-		local ct = CurTime()
-		--print(dply)
-
-		if IsValid(dply) and (dply:IsPlayer() or dply:GetClass() == "whoswho_downed_clone") then
-			local id = dply:EntIndex()
+	if not nzRevive.Players[ply:EntIndex()] then
+		local cur_time = CurTime()
+		local trace = util.QuickTrace(ply:EyePos(), ply:GetAimVector() * 100, ply)
+		local downed_ply = trace.Entity
+		
+		if IsValid(downed_ply) and (downed_ply:IsPlayer() or downed_ply:GetClass() == "whoswho_downed_clone") then
+			local id = downed_ply:EntIndex()
+			
 			if nzRevive.Players[id] then
-				if !nzRevive.Players[id].RevivePlayer then
-					dply:StartRevive(ply)
-				end
-
-				-- print(CurTime() - nzRevive.Players[id].ReviveTime)
-
-				if ply:HasPerk("revive") and ct - nzRevive.Players[id].ReviveTime >= 2 -- With quick-revive
-				or ct - nzRevive.Players[id].ReviveTime >= 4 then	-- 4 is the time it takes to revive
-					dply:RevivePlayer(ply)
+				if not nzRevive.Players[id].RevivePlayer then downed_ply:StartRevive(ply) end
+				
+				if ply:HasPerk("revive") and cur_time - nzRevive.Players[id].ReviveTime >= 2 or cur_time - nzRevive.Players[id].ReviveTime >= 4 then
+					--it takes 2 seconds to revive with quick revive and 4 normally
+					downed_ply:RevivePlayer(ply)
+					
 					ply.Reviving = nil
 				end
 			end
-		elseif ply.LastReviveTime ~= nil and IsValid(ply.Reviving) and ply.Reviving != dply -- Holding E on another player or no player
-		and ct > ply.LastReviveTime + revivefailtime then -- and for longer than fail time window
+		elseif ply.LastReviveTime and IsValid(ply.Reviving) and ply.Reviving ~= downed_ply and cur_time > ply.LastReviveTime + revivefailtime then
 			local id = ply.Reviving:EntIndex()
-			if nzRevive.Players[id] then
-				if nzRevive.Players[id].ReviveTime then
-					--ply:SetMoveType(MOVETYPE_WALK)
-					ply.Reviving:StopRevive()
-					ply.Reviving = nil
-				end
+			
+			if nzRevive.Players[id] and nzRevive.Players[id].ReviveTime then
+				ply.Reviving:StopRevive()
+				
+				ply.Reviving = nil
 			end
 		end
-
-		-- When a player stops reviving
-		if !ply:KeyDown(IN_USE) then -- If you have an old revival target
+		
+		--when a player stops reviving
+		if not ply:KeyDown(IN_USE) then --if you have an old revival target
 			if IsValid(ply.Reviving) and (ply.Reviving:IsPlayer() or ply.Reviving:GetClass() == "whoswho_downed_clone") then
 				local id = ply.Reviving:EntIndex()
+				
 				if nzRevive.Players[id] then
 					if nzRevive.Players[id].ReviveTime then
-						--ply:SetMoveType(MOVETYPE_WALK)
 						ply.Reviving:StopRevive()
 						ply.Reviving = nil
-						--nz.nzRevive.Functions.SendSync()
 					end
 				end
 			end
 		end
-
 	end
 end
 
@@ -83,37 +50,54 @@ hook.Add("FindUseEntity", "CheckRevive", nzRevive.HandleRevive)
 
 if SERVER then
 	util.AddNetworkString("nz_TombstoneSuicide")
-
+	util.AddNetworkString("nz_WhosWhoActive")
+	
 	net.Receive("nz_TombstoneSuicide", function(len, ply)
 		if ply:GetDownedWithTombstone() then
 			local tombstone = ents.Create("drop_tombstone")
-			tombstone:SetPos(ply:GetPos() + Vector(0,0,50))
+			
+			tombstone:SetPos(ply:GetPos() + Vector(0, 0, 50))
 			tombstone:Spawn()
+			
 			local weps = {}
-			for k,v in pairs(ply:GetWeapons()) do
-				table.insert(weps, {class = v:GetClass(), pap = v:HasNZModifier("pap")})
-			end
+			
+			for k, v in pairs(ply:GetWeapons()) do table.insert(weps, {class = v:GetClass(), pap = v:HasNZModifier("pap")}) end
+			
 			local perks = ply.OldPerks
-
+			
 			tombstone.OwnerData.weps = weps
 			tombstone.OwnerData.perks = perks
-
+			
 			ply:KillDownedPlayer()
 			tombstone:SetPerkOwner(ply)
 		end
 	end)
-end
-
-if SERVER then
-	util.AddNetworkString("nz_WhosWhoActive")
+	
+	hook.Add("Think", "CheckDownedPlayersTime", function()
+		for ent_index, player_data in pairs(nzRevive.Players) do
+			if CurTime() - player_data.DownTime >= GetConVar("nz_downtime"):GetFloat() and not player_data.ReviveTime then
+				local ent = Entity(ent_index)
+				
+				if ent.KillDownedPlayer then ent:KillDownedPlayer()
+				else
+					--If it's a non-player entity, do the same thing just to clean up the table
+					local revivor = player_data.RevivePlayer
+					
+					if IsValid(revivor) then revivor:StripWeapon("nz_revive_morphine") end
+					
+					nzRevive.Players[ent_index] = nil
+				end
+			end
+		end
+	end)
 end
 
 function nzRevive:CreateWhosWhoClone(ply, pos)
 	local pos = pos or ply:GetPos()
-
-	local wep = IsValid(ply:GetActiveWeapon()) and ply:GetActiveWeapon():GetClass() != "nz_perk_bottle" and ply:GetActiveWeapon():GetClass() or ply.oldwep or nil
-
+	local wep = IsValid(ply:GetActiveWeapon()) and ply:GetActiveWeapon():GetClass() ~= "nz_perk_bottle" and ply:GetActiveWeapon():GetClass() or ply.oldwep or nil
+	local weps = {}
 	local who = ents.Create("whoswho_downed_clone")
+	
 	who:SetPos(pos + Vector(0,0,10))
 	who:SetAngles(ply:GetAngles())
 	who:Spawn()
@@ -121,85 +105,69 @@ function nzRevive:CreateWhosWhoClone(ply, pos)
 	who:SetPerkOwner(ply)
 	who:SetModel(ply:GetModel())
 	who.OwnerData.perks = ply.OldPerks or ply:GetPerks()
-	local weps = {}
-	for k,v in pairs(ply:GetWeapons()) do
-		table.insert(weps, {class = v:GetClass(), pap = v:HasNZModifier("pap"), speed = v:HasNZModifier("speed"), dtap = v:HasNZModifier("dtap")})
-	end
+	
+	for _, v in pairs(ply:GetWeapons()) do table.insert(weps, {class = v:GetClass(), pap = v:HasNZModifier("pap"), speed = v:HasNZModifier("speed"), dtap = v:HasNZModifier("dtap")}) end
+	
 	who.OwnerData.weps = weps
-
+	
 	timer.Simple(0.1, function()
 		if IsValid(who) then
 			local id = who:EntIndex()
+			
 			self.Players[id] = {}
 			self.Players[id].DownTime = CurTime()
-
+			
 			hook.Call("PlayerDowned", nzRevive, who)
 		end
 	end)
-
+	
 	ply.WhosWhoClone = who
 	ply.WhosWhoMoney = 0
-
+	
 	net.Start("nz_WhosWhoActive")
-		net.WriteBool(true)
+	net.WriteBool(true)
 	net.Send(ply)
 end
 
 function nzRevive:RespawnWithWhosWho(ply, pos)
 	local pos = pos or nil
 
-	if !pos then
-		local spawns = {}
-		local plypos = ply:GetPos()
-		local maxdist = 1500^2
-		local mindist = 500^2
-
+	if not pos then
 		local available = ents.FindByClass("nz_spawn_zombie_special")
+		local maxdist = 1500 ^ 2
+		local mindist = 500 ^ 2
+		local plypos = ply:GetPos()
+		local spawns = {}
+		
 		if IsValid(available[1]) then
-			for k,v in pairs(available) do
-				local dist = plypos:DistToSqr(v:GetPos())
-				if v.link == nil or nzDoors:IsLinkOpened( v.link ) then -- Only for rooms that are opened (using links)
-					if dist < maxdist and dist > mindist then -- Within the range we set above
-						if v:IsSuitable() then -- And nothing is blocking it
-							table.insert(spawns, v)
-						end
-					end
-				end
+			for _, ent in pairs(available) do
+				local dist = plypos:DistToSqr(ent:GetPos())
+				
+				if (not ent.link or nzDoors:IsLinkOpened(ent.link)) and dist < maxdist and dist > mindist and ent:IsSuitable() then table.insert(spawns, ent) end
 			end
-			if !IsValid(spawns[1]) then
-				for k,v in pairs(available) do -- Retry, but without the range check (just use all of them)
-					local dist = plypos:DistToSqr(v:GetPos())
-					if v.link == nil or nzDoors:IsLinkOpened( v.link ) then
-						if v:IsSuitable() then
-							table.insert(spawns, v)
-						end
-					end
-				end
-			end
-			if !IsValid(spawns[1]) then -- Still no open linked ones?! Spawn at a random player spawnpoint
+			
+			--fall back, redo the search but without distance restriction
+			if not IsValid(spawns[1]) then for _, ent in pairs(available) do if (not ent.link or nzDoors:IsLinkOpened(ent.link)) and ent:IsSuitable() then table.insert(spawns, ent) end end end
+			
+			--ANOTHER fall back, searches the spawn points
+			if not IsValid(spawns[1]) then
 				local pspawns = ents.FindByClass("player_spawns")
-				if !IsValid(pspawns[1]) then
-					ply:Spawn()
-				else
-					pos = pspawns[math.random(#pspawns)]:GetPos()
-				end
-			else
-				pos = spawns[math.random(#spawns)]:GetPos()
-			end
+				
+				if not IsValid(pspawns[1]) then ply:Spawn()
+				else pos = pspawns[math.random(table.Count(pspawns))]:GetPos() end
+			else pos = spawns[math.random(table.Count(spawns))]:GetPos() end
 		else
 			-- There exists no special spawnpoints - Use regular player spawns
 			local pspawns = ents.FindByClass("player_spawns")
-			if !IsValid(pspawns[1]) then
-				ply:Spawn()
-			else
-				pos = pspawns[math.random(#pspawns)]:GetPos()
-			end
+			if not IsValid(pspawns[1]) then ply:Spawn()
+			else pos = pspawns[math.random(#pspawns)]:GetPos() end
 		end
 	end
+	
 	ply:RevivePlayer()
 	ply:StripWeapons()
-	player_manager.RunClass(ply, "Loadout") -- Rearm them
+	
+	player_manager.RunClass(ply, "Loadout")
 
 	if pos then ply:SetPos(pos) end
-
 end
