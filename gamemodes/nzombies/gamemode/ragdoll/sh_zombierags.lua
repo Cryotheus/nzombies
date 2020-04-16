@@ -13,7 +13,7 @@ local function cleanrag(ent, ragdoll, time)
 		end
 	end
 	
-	if ragdoll:GetClass() ~= "C_HL2MPRagdoll" or SERVER then SafeRemoveEntityDelayed(ragdoll, dTime + 2.5) end
+	if ragdoll:GetClass() ~= "class C_HL2MPRagdoll" or SERVER then SafeRemoveEntityDelayed(ragdoll, dTime + 2.5) end
 end
 
 if CLIENT then

@@ -7,7 +7,8 @@ if SERVER then
 
 		nzRevive.Players[id] = {}
 		nzRevive.Players[id].DownTime = CurTime()
-
+		nzRevive.Players[id].DownTimeMax = GetConVar("nz_downtime"):GetFloat()
+		
 		-- downed players are not targeted
 		self:SetTargetPriority(TARGET_PRIORITY_NONE)
 		self:SetHealth(100)

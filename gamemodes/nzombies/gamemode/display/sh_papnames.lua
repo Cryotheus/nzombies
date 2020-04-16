@@ -56,6 +56,4 @@ nz.Display_PaPNames = {
 	["cw_dz_ru556"] = "Codename Rul3R-5000"
 }
 
-function AddPackAPunchName(class, papname) -- The function also works with display names just like above
-	nz.Display_PaPNames[class] = papname
-end
+function AddPackAPunchName(class, papname) nz.Display_PaPNames[class] = papname end

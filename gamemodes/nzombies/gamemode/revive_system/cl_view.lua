@@ -5,6 +5,7 @@ function XYCompassToScreen(pos, boundary)
 	local w = ScrW() - boundary
 	local h = ScrH() - boundary
 	local dir = (pos - EyePos()):GetNormalized()
+	
 	dir = Vector(dir.x, dir.y, 0)
 	eyedir = Vector(eyedir.x, eyedir.y, 0)
 	
@@ -16,35 +17,34 @@ function XYCompassToScreen(pos, boundary)
 end
 
 local tab = {
- [ "$pp_colour_addr" ] = 0,
- [ "$pp_colour_addg" ] = 0,
- [ "$pp_colour_addb" ] = 0,
- [ "$pp_colour_brightness" ] = 0,
- [ "$pp_colour_contrast" ] = 1,
- [ "$pp_colour_colour" ] = 0,
- [ "$pp_colour_mulr" ] = 0,
- [ "$pp_colour_mulg" ] = 0,
- [ "$pp_colour_mulb" ] = 0
-} 
-local fade = 1
+	["$pp_colour_addr"] = 0,
+	["$pp_colour_addg"] = 0,
+	["$pp_colour_addb"] = 0,
+	["$pp_colour_brightness"] = 0,
+	["$pp_colour_contrast"] = 1,
+	["$pp_colour_colour"] = 0,
+	["$pp_colour_mulr"] = 0,
+	["$pp_colour_mulg"] = 0,
+	["$pp_colour_mulb"] = 0
+}
 
+local fade = 1
 local mat_revive = Material("materials/Revive.png", "unlitgeneric smooth")
 
 function nzRevive:ResetColorFade()
 	tab = {
-		 [ "$pp_colour_addr" ] = 0,
-		 [ "$pp_colour_addg" ] = 0,
-		 [ "$pp_colour_addb" ] = 0,
-		 [ "$pp_colour_brightness" ] = 0,
-		 [ "$pp_colour_contrast" ] = 1,
-		 [ "$pp_colour_colour" ] = 0,
-		 [ "$pp_colour_mulr" ] = 0,
-		 [ "$pp_colour_mulg" ] = 0,
-		 [ "$pp_colour_mulb" ] = 0
+		["$pp_colour_addr"] = 0,
+		["$pp_colour_addg"] = 0,
+		["$pp_colour_addb"] = 0,
+		["$pp_colour_brightness"] = 0,
+		["$pp_colour_contrast"] = 1,
+		["$pp_colour_colour"] = 0,
+		["$pp_colour_mulr"] = 0,
+		["$pp_colour_mulg"] = 0,
+		["$pp_colour_mulb"] = 0
 	}
-	fade = 1
 	
-	--print("Color reset!")
+	fade = 1
 end
 
 local function CalcDownView(ply, pos, ang, fov, znear, zfar)
@@ -68,49 +68,64 @@ end
 
 local function DrawColorModulation()
 	if nzRevive.Players[LocalPlayer():EntIndex()] then
-		local fadeadd = ((1/GetConVar("nz_downtime"):GetFloat()) * FrameTime()) * -1 	-- Change 45 to the revival time
-		tab[ "$pp_colour_colour" ] = math.Approach(tab[ "$pp_colour_colour" ], 0, fadeadd)
-		tab[ "$pp_colour_addr" ] = math.Approach(tab[ "$pp_colour_addr" ], 0.5, fadeadd *-0.5)
-		tab[ "$pp_colour_mulr" ] = math.Approach(tab[ "$pp_colour_mulr" ], 1, -fadeadd)
-		tab[ "$pp_colour_mulg" ] = math.Approach(tab[ "$pp_colour_mulg" ], 0, fadeadd)
-		tab[ "$pp_colour_mulb" ] = math.Approach(tab[ "$pp_colour_mulb" ], 0, fadeadd)
+		local fadeadd = -1 / GetConVar("nz_downtime"):GetFloat() * FrameTime() 	-- Change 45 to the revival time
+		
+		tab["$pp_colour_colour"] = math.Approach(tab["$pp_colour_colour"], 0, fadeadd)
+		tab["$pp_colour_addr"] = math.Approach(tab["$pp_colour_addr"], 0.5, fadeadd * -0.5)
+		tab["$pp_colour_mulr"] = math.Approach(tab["$pp_colour_mulr"], 1, -fadeadd)
+		tab["$pp_colour_mulg"] = math.Approach(tab["$pp_colour_mulg"], 0, fadeadd)
+		tab["$pp_colour_mulb"] = math.Approach(tab["$pp_colour_mulb"], 0, fadeadd)
 		
 		--print(fadeadd, tab[ "$pp_colour_colour" ], tab[ "$pp_colour_brightness" ]) 
 		DrawColorModify(tab)
 	end
 end
 
-function surface.DrawTexturedRectRotatedPoint( x, y, w, h, rot, x0, y0 )
-
-	local c = math.cos( math.rad( rot ) )
-	local s = math.sin( math.rad( rot ) )
-
+function surface.DrawTexturedRectRotatedPoint(x, y, w, h, rot, x0, y0)
+	local c = math.cos(math.rad(rot))
+	local s = math.sin(math.rad(rot))
+	
 	local newx = y0 * s - x0 * c
 	local newy = y0 * c + x0 * s
-
-	surface.DrawTexturedRectRotated( x + newx, y + newy, w, h, rot )
-
+	
+	surface.DrawTexturedRectRotated(x + newx, y + newy, w, h, rot)
 end
 
 local function DrawDownedPlayers()
-	
-	for k,v in pairs(nzRevive.Players) do
+	for k, v in pairs(nzRevive.Players) do
 		local ply = Entity(k)
+		
 		if IsValid(ply) then -- If they're outside PVS, don't draw the icon at all
 			if ply == LocalPlayer() then return end
-			local posxy = (ply:GetPos() + Vector(0,0,35)):ToScreen()
-			local dir = ((ply:GetPos() + Vector(0,0,35)) - EyeVector()*2):GetNormal():ToScreen()
-			--print(posxy["x"], posxy["y"], posxy["visible"])
 			
-			if posxy.x - 35 < 60 or posxy.x - 35 > ScrW()-130 or posxy.y - 50 < 60 or posxy.y - 50 > ScrH()-110 then
-				posxy.x, posxy.y = XYCompassToScreen((ply:GetPos() + Vector(0,0,35)), 60)
-			end
+			local down_time = v.DownTime
+			local down_time_max = v.DownTimeMax
+			local max_time = GetConVar("nz_downtime"):GetFloat()
+			local posxy = (ply:GetPos() + Vector(0, 0, 35)):ToScreen()
+			local dir = ((ply:GetPos() + Vector(0, 0, 35)) - EyeVector() * 2):GetNormal():ToScreen()
+			
+			if posxy.x - 35 < 60 or posxy.x - 35 > ScrW()-130 or posxy.y - 50 < 60 or posxy.y - 50 > ScrH()-110 then posxy.x, posxy.y = XYCompassToScreen((ply:GetPos() + Vector(0,0,35)), 60) end
 			
 			surface.SetMaterial(mat_revive)
-			if v.ReviveTime then
-				surface.SetDrawColor(255, 255, 255)
+			
+			if v.ReviveTime then surface.SetDrawColor(255, 255, 255)
 			else
-				surface.SetDrawColor(255, 150 - (CurTime() - v.DownTime)*(150/GetConVar("nz_downtime"):GetFloat()), 0)
+				local down_time_diff = CurTime() - down_time
+				local down_time_max_diff = down_time_max - max_time
+				
+				if down_time_diff < down_time_max_diff then
+					--if they have more time than they should, make it green fading to yellow
+					surface.SetDrawColor(
+						down_time_diff * (255 / down_time_max_diff),
+						255 - down_time_diff * (105 / down_time_max_diff),
+						0)
+				else
+					--otherwise use the normal yellow to red
+					surface.SetDrawColor(
+						255,
+						150 - (down_time_diff - down_time_max_diff) * (150 / max_time),
+						0)
+				end
 			end
 			
 			--draw.SimpleText(v.ReviveTime and "REVIVING" or "DOWNED", font, posxy["x"], posxy["y"] + 10, v.ReviveTime and Color(255,255,255) or Color(200, 0, 0,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
@@ -138,18 +153,15 @@ local function DrawRevivalProgress()
 end
 
 local function DrawDownedNotify()
-
-	if !LocalPlayer():GetNotDowned() then
+	if not LocalPlayer():GetNotDowned() then
 		local text = "YOU NEED HELP!"
 		local font = "nz.display.hud.main"
 		local rply = nzRevive.Players[LocalPlayer():EntIndex()].RevivePlayer
 		
-		if IsValid(rply) and rply:IsPlayer() then
-			text = rply:Nick().." is reviving you!"
-		end
+		if IsValid(rply) and rply:IsPlayer() then text = rply:Nick() .. " is reviving you!" end
+		
 		draw.SimpleText(text, font, ScrW() / 2, ScrH() * 0.9, Color(200, 0, 0,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 	end
-
 end
 
 function nzRevive:DownedHeadsUp(ply, text)
@@ -278,14 +290,14 @@ local function DrawWhosWhoOverlay()
 end
 
 -- Hooks
-hook.Add("CalcView", "CalcDownedView", CalcDownView )
-hook.Add("CalcViewModelView", "CalcDownedViewmodelView", CalcDownViewmodelView )
+hook.Add("CalcView", "CalcDownedView", CalcDownView)
+hook.Add("CalcViewModelView", "CalcDownedViewmodelView", CalcDownViewmodelView)
 hook.Add("RenderScreenspaceEffects", "DrawColorModulation", DrawColorModulation)
 hook.Add("HUDPaint", "DrawDamageOverlay", DrawDamagedOverlay)
-hook.Add("HUDPaint", "DrawDownedPlayers", DrawDownedPlayers )
-hook.Add("HUDPaint", "DrawDownedNotify", DrawDownedNotify )
-hook.Add("HUDPaint", "DrawRevivalProgress", DrawRevivalProgress )
-hook.Add("HUDPaint", "DrawDownedPlayersNotify", DrawDownedHeadsUp )
-hook.Add("HUDPaint", "DrawTombstoneNotify", DrawTombstoneNotify )
-hook.Add("HUDPaint", "DrawTombstoneProgress", DrawTombstoneProgress )
-hook.Add("RenderScreenspaceEffects", "DrawWhosWhoOverlay", DrawWhosWhoOverlay )
+hook.Add("HUDPaint", "DrawDownedPlayers", DrawDownedPlayers)
+hook.Add("HUDPaint", "DrawDownedNotify", DrawDownedNotify)
+hook.Add("HUDPaint", "DrawRevivalProgress", DrawRevivalProgress)
+hook.Add("HUDPaint", "DrawDownedPlayersNotify", DrawDownedHeadsUp)
+hook.Add("HUDPaint", "DrawTombstoneNotify", DrawTombstoneNotify)
+hook.Add("HUDPaint", "DrawTombstoneProgress", DrawTombstoneProgress)
+hook.Add("RenderScreenspaceEffects", "DrawWhosWhoOverlay", DrawWhosWhoOverlay)

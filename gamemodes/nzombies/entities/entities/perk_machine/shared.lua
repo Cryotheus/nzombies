@@ -96,7 +96,7 @@ function ENT:Use(activator, caller)
 					
 					-- Call a hook for it
 					local hookblock = hook.Call("OnPlayerBuyPerkMachine", nil, activator, self)
-					if hookblock != nil then -- Only if the hook returned true/false
+					if hookblock ~= nil then -- Only if the hook returned true/false
 						given = hookblock
 					end
 					
@@ -109,10 +109,10 @@ function ENT:Use(activator, caller)
 									activator:GivePerk(id, self)
 								end
 							end)
-						else
-							activator:GivePerk(id, self)
-						end
-						self:EmitSound("nz/machines/jingle/"..id.."_get.wav", 75)
+						else activator:GivePerk(id, self) end
+						
+						self:EmitSound(nzPerks.Jingle[id] and nzPerks.Jingle[id](activator, self) or "nz/machines/jingle/" .. id .. "_get.wav", 75)
+						
 						return true
 					end
 				else

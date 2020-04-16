@@ -75,7 +75,7 @@ if SERVER then
 	
 	hook.Add("Think", "CheckDownedPlayersTime", function()
 		for ent_index, player_data in pairs(nzRevive.Players) do
-			if CurTime() - player_data.DownTime >= GetConVar("nz_downtime"):GetFloat() and not player_data.ReviveTime then
+			if CurTime() - player_data.DownTime >= player_data.DownTimeMax and not player_data.ReviveTime then
 				local ent = Entity(ent_index)
 				
 				if ent.KillDownedPlayer then ent:KillDownedPlayer()
@@ -116,6 +116,7 @@ function nzRevive:CreateWhosWhoClone(ply, pos)
 			
 			self.Players[id] = {}
 			self.Players[id].DownTime = CurTime()
+			self.Players[id].DownTimeMax = GetConVar("nz_downtime"):GetFloat()
 			
 			hook.Call("PlayerDowned", nzRevive, who)
 		end
@@ -157,8 +158,9 @@ function nzRevive:RespawnWithWhosWho(ply, pos)
 				else pos = pspawns[math.random(table.Count(pspawns))]:GetPos() end
 			else pos = spawns[math.random(table.Count(spawns))]:GetPos() end
 		else
-			-- There exists no special spawnpoints - Use regular player spawns
+			--there is no special spawnpoints, use regular player spawns
 			local pspawns = ents.FindByClass("player_spawns")
+			
 			if not IsValid(pspawns[1]) then ply:Spawn()
 			else pos = pspawns[math.random(#pspawns)]:GetPos() end
 		end
