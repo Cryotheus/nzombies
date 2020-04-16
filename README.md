@@ -1,9 +1,8 @@
 nZombies with fixes
 ========
-
 A GM13 Nazi Zombies style (WIP) gamemode
 
-This fork will be my attempt at fixing the buggy code.
+This fork will be my attempt at cleaning up the code, and adding some extra nice features.
 
 Download folder and place it in garrysmod/garrysmod/addons
 Make sure the structure has a path to addon.json like this: garrysmod/garrysmod/addons/nzombies/addon.json
@@ -11,52 +10,24 @@ Make sure the structure has a path to addon.json like this: garrysmod/garrysmod/
 Get the content pack with all models and materials here:
 http://steamcommunity.com/sharedfiles/filedetails/?id=675138912
 
-Get the collection of weapon packs used by the official configs here:
-http://steamcommunity.com/sharedfiles/filedetails/?id=673266588
+If you found bugs, have suggestions, or found general improvements please make an issue on this repository. If you want to help, feel free to create pull requests with your changes.
 
-If you have bugs, suggestions, or general improvements, open up an issue with the issue button at the top. If you want to help, feel free to create pull requests with your changes. If you have questions, add me on steam :)
-
-This is an edited version from Aligs original featuring these changes:
-
-- Revival System & Health
-	- Fully working revival system, including crawling around and animations
-
-- Navigation Tools
-	- Lock areas of the maps based on doors, allowing Zombies to navigate around them
-
-- Additional Content
-	- All perks up until Black Ops 3; all DLC working!
-	- A proper HUD!
-	- More Powerups
-	- More sounds
-	- More effects
-  - Official configs w/ Full Easter Eggs
-  - Traps
-	- Better editing in creative mode
-		- Undo system
-		- Context Menu to quickly edit properties without equipping tool (Hold C)
-		- Many more props, light effects, sky/fog/sun editors, fire entities, and more ...
-    - Better tool system
-
-- Better Mapping!
-	- Decide weapons in box, music easter egg songs, boss rounds, special rounds
-	- Decide starting weapon and starting amount of points
-  - Support for many more types of doors
-
-- Better Zombie AI (Thanks Lolle!)
-
-- Easy Mismatch Correction System
-	- Loading configs using weapons you may not have installed creates an easy menu to replace them
-	- Applies to wall buys, random box list, perks (if scripted in), and more as new stuff is added
-		
-- Better Mechanics
-	- Proper Weapon System
-	- Better Zombie health and speed curves
-	
-- Misc changes
-	- Speed Cola and Double Tap now works on all weapons!
-	- Wall Buys are actual chalk-outlines!
-  - Zombies are actual Der Riese models w/ Animations and sound!
-
-- Workshop Release To-do list:
-	Check the Issues tab with the "Workshop Release" milestone. Feel free to discuss your opinion about the things in there, it would help greatly.
+This is an edited version from Zet0rz's fork featuring these changes:
+ * Extra features for more modding potential
+   * PaP-ed weapon names prioritize nz.Display_PaPNames to allow overriding existing PaP-ed weapon names
+   * Perk machines can have a function provided to determine the sound file used for their jingle
+   * Down times can be changed per-player allowing modification of down times
+   * Extended down times will show a green revive marker fading to yellow during the duration of the extended down time
+ * Various fixes
+   * Hell hounds can run
+   * Generally more optimized code
+   * PURE LUA! (in files that have been cleaned up)
+   * Fifth and tenth tally marks line up properly
+ * Various outsourced fixes
+   * Double Tap II applies to every weapon
+   * Players no longer get stuck with the morphine SWEP
+   * Panzersoldat kills give points
+   * Zombies staying at barricades because of improperly removed planks
+   * nz_qr can only be run by super admins
+   * Dogs no longer leave behind reference posed corpses when killed by instakill power up
+   * Ammo is given when obtaining a special weapon from the box
