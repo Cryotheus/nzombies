@@ -185,7 +185,8 @@ nzPerks:NewPerk("pap", {
 			local cost = reroll and 2000 or 5000
 			return ply:GetPoints() >= cost
 		else
-			ply:PrintMessage( HUD_PRINTTALK, "This weapon is already Pack-a-Punched")
+			ply:PrintMessage(HUD_PRINTTALK, "This weapon is already Pack-a-Punched")
+			
 			return false
 		end
 	end,
@@ -265,14 +266,11 @@ nzPerks:NewPerk("pap", {
 						wep:SetMoveType( MOVETYPE_FLY )
 					end
 					
-					--print(wep, wep.WepClass, wep:GetModel())
-				
 					machine:EmitSound("nz/machines/pap_ready.wav")
 					wep:SetCollisionBounds(Vector(0,0,0), Vector(0,0,0))
 					wep:SetMoveType(MOVETYPE_FLY)
 					wep:SetGravity(0.000001)
-					wep:SetLocalVelocity(ang:Forward()*30)
-					--print(ang:Forward()*30, wep:GetVelocity())
+					wep:SetLocalVelocity(ang:Forward() * 30)
 					wep:CreateTriggerZone(reroll)
 					--print(reroll)
 				end
