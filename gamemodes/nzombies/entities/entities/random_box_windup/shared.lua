@@ -21,8 +21,9 @@ function ENT:Initialize()
 	self:SetMoveType(MOVETYPE_NOCLIP)
 	self:SetLocalVelocity(self:GetAngles():Up() * 4)
 
-	self:SetSolid( SOLID_OBB )
-	self:DrawShadow( false )
+	self:SetSolid(SOLID_OBB)
+	self:DrawShadow(false)
+	self:SetCollisionGroup(COLLISION_GROUP_DEBRIS)
 
 	self:SetWinding(true)
 	self:SetIsTeddy(false)
@@ -83,7 +84,7 @@ function ENT:Use( activator, caller )
 			self:Remove()
 		else
 			if IsValid(self.Buyer) then
-				activator:PrintMessage( HUD_PRINTTALK, "This is " .. self.Buyer:Nick() .. "'s gun. You cannot take it." )
+				activator:PrintMessage(HUD_PRINTCENTER, "This is " .. self.Buyer:Nick() .. "'s gun. You cannot take it.")
 			end
 		end
 	end

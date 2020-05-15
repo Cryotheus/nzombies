@@ -2,11 +2,11 @@
 {
 	"base"		"base"
     "title"  "nZombies"
-    "version"   "4.0"
+    "version"   "4.1.0"
     "menusystem"	"1"
     "maps"	"^nz_"
 
-    "author_name"   "Alig96, Zet0r, Lolle"
+    "author_name"   "Alig96, Zet0r, Lolle, Cryotheum"
     "author_email"  ""
 
     "icon"  ""
