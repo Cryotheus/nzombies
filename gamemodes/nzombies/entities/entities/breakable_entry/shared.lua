@@ -73,6 +73,8 @@ function ENT:RemovePlank()
 	
 	table.RemoveByValue(self.Planks, plank)
 	self:SetNumPlanks( self:GetNumPlanks() - 1 )
+	
+	self.NextPlank = CurTime() + 5
 end
 
 function ENT:ResetPlanks(nosoundoverride)

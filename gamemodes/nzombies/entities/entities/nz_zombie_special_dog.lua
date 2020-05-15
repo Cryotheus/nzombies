@@ -152,7 +152,6 @@ function ENT:OnSpawn()
 end
 
 function ENT:OnZombieDeath(dmgInfo)
-
 	self:SetRunSpeed(0)
 	self.loco:SetVelocity(Vector(0,0,0))
 	self:Stop()
@@ -164,7 +163,7 @@ function ENT:OnZombieDeath(dmgInfo)
 		if IsValid(self) then
 			self:ResetSequence(seq)
 			self:SetCycle(0)
-			self:SetCollisionGroup(COLLISION_GROUP_WEAPON) --we use this type so the dogs d
+			self:SetCollisionGroup(COLLISION_GROUP_IN_VEHICLE) --we use this type so the dogs d
 		end 
 	end)
 
@@ -173,8 +172,8 @@ function ENT:OnZombieDeath(dmgInfo)
 			self:Remove()
 		end
 	end)
-	self:EmitSound( self.DeathSounds[ math.random( #self.DeathSounds ) ], 100)
-
+	
+	self:EmitSound(self.DeathSounds[math.random(#self.DeathSounds)], 100)
 end
 
 function ENT:BodyUpdate()
@@ -278,13 +277,12 @@ function ENT:GetPriorityTarget()
 		self:SetTarget(bestTarget) -- Well we found a target, we kinda have to force it
 
 		return bestTarget
-	else
-		self:TimeOut(0.2)
-	end
+	else self:TimeOut(0.2) end
 end
 
-function ENT:IsValidTarget( ent )
-	if !ent then return false end
-	return IsValid( ent ) and ent:GetTargetPriority() != TARGET_PRIORITY_NONE and ent:GetTargetPriority() != TARGET_PRIORITY_SPECIAL
-	-- Won't go for special targets (Monkeys), but still MAX, ALWAYS and so on
+function ENT:IsValidTarget(ent)
+	if not ent then return false end
+	
+	--Won't go for special targets (Monkeys), but still MAX, ALWAYS and so on
+	return IsValid(ent) and ent:GetTargetPriority() ~= TARGET_PRIORITY_NONE and ent:GetTargetPriority() ~= TARGET_PRIORITY_SPECIAL
 end
