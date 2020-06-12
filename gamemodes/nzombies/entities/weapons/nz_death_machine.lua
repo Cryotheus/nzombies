@@ -1,22 +1,39 @@
+local shoot_sound = Sound("nz/deathmachine/loop_l_.wav")
+
 if SERVER then
 	AddCSLuaFile("nz_death_machine.lua")
+	
 	SWEP.Weight			= 5
 	SWEP.AutoSwitchTo	= true
 	SWEP.AutoSwitchFrom	= false
+	
+	function SWEP:NZSpecialHolster(wep)
+		if IsValid(self.Owner) then
+			print(self.Owner, self.WepOwner)
+			
+			self.Owner:RemovePowerUp("deathmachine", false)
+		end
+		
+		return true
+	end
+	
+	function SWEP:OnRemove()
+		if not IsValid(self.WepOwner:GetActiveWeapon()) or not self.WepOwner:GetActiveWeapon():IsSpecial() then self.WepOwner:SetUsingSpecialWeapon(false) end
+		
+		self.WepOwner:SetActiveWeapon(nil)
+		self.WepOwner:EquipPreviousWeapon()
+	end
 end
 
 if CLIENT then
-
-	SWEP.PrintName     	    = "Death Machine"			
-	SWEP.Slot				= 1
-	SWEP.SlotPos			= 1
-	SWEP.DrawAmmo			= false
-	SWEP.DrawCrosshair		= true
+	SWEP.PrintName		= "Death Machine"			
+	SWEP.Slot			= 1
+	SWEP.SlotPos		= 1
+	SWEP.DrawAmmo		= false
+	SWEP.DrawCrosshair	= true
 	
-	SWEP.Category			= "nZombies"
-
+	SWEP.Category		= "nZombies"
 end
-
 
 SWEP.Author			= "Zet0r"
 SWEP.Contact		= "youtube.com/Zet0r"
@@ -45,79 +62,44 @@ SWEP.Secondary.Ammo			= "none"
 
 SWEP.NZPreventBox = true
 SWEP.NZTotalBlacklist = true
-SWEP.NZSpecialCategory = "display" -- This makes it count as special, as well as what category it replaces
--- (display is generic stuff that should only be carried temporarily and never holstered and kept)
+SWEP.NZSpecialCategory = "display" --this makes it count as special, as well as what category it replaces
+--(display is generic stuff that should only be carried temporarily and never holstered and kept)
 
-function SWEP:Initialize()
-
-	self:SetHoldType( self.HoldType )
-
-end
+function SWEP:Initialize() self:SetHoldType(self.HoldType) end
 
 function SWEP:Deploy()
 	self:SendWeaponAnim(ACT_VM_DRAW)
+	
 	self.WepOwner = self.Owner
 end
 
-function SWEP:Equip( owner )
+function SWEP:Equip(owner)
 	owner:SetActiveWeapon("nz_death_machine")
+	
+	--let's not call a meta function every damn shot
+	self.Damage = (nzRound:GetZombieHealth() or 75) * 3
 end
 
-local shootsound = Sound("nz/deathmachine/loop_l_.wav")
 function SWEP:PrimaryAttack()
-	
 	self:SetNextPrimaryFire(CurTime() + 0.05)
-	self:EmitSound( shootsound )
+	self:EmitSound(shoot_sound)
 	
-	local shootpos = self.Owner:GetShootPos()
-	local shootang = self.Owner:GetAimVector()
+	local bullet = {
+		Damage = self.Damage,
+		Dir = self.Owner:GetAimVector() + Vector(0, 0, 0),
+		Force = 10,
+		Spread = Vector(0.02, 0.02, 0),
+		Src = self.Owner:GetShootPos(),
+		Tracer = 1,
+		TracerName = "AirboatGunHeavyTracer"
+	}
 	
-	local bullet = {}
-	bullet.Damage = 9000
-	bullet.Force = 10
-	bullet.Tracer = 1
-	bullet.TracerName = "AirboatGunHeavyTracer"
-	bullet.Src = shootpos
-	bullet.Dir = shootang + Vector(0,0,0)
-	bullet.Spread = Vector(0.02, 0.02, 0)
-	
-	--local fx = EffectData()
-	--fx:SetEntity(self)
-	--fx:SetOrigin(shootpos)
-	--fx:SetNormal(shootang)
-	--fx:SetAttachment(self.MuzzleAttachment)
 	self.Owner:MuzzleFlash()
-	self.Owner:FireBullets( bullet )
-	self:SendWeaponAnim( ACT_VM_PRIMARYATTACK )
-	self.Owner:SetAnimation( PLAYER_ATTACK1 )
-	self.Owner:ViewPunch( Angle( math.Rand(-0.5,-0.3), math.Rand(-0.3,0.3), 0 ) )
-	
+	self.Owner:FireBullets(bullet)
+	self:SendWeaponAnim(ACT_VM_PRIMARYATTACK)
+	self.Owner:SetAnimation(PLAYER_ATTACK1)
 end
 
-function SWEP:PostDrawViewModel()
+function SWEP:PostDrawViewModel() end
 
-end
-
-function SWEP:NZSpecialHolster(wep)
-	if IsValid(self.Owner) then
-		self.Owner:RemovePowerUp("deathmachine")
-	end
-	return true
-end
-
-function SWEP:OnRemove()
-	if SERVER then
-		if !IsValid(self.WepOwner:GetActiveWeapon()) or !self.WepOwner:GetActiveWeapon():IsSpecial() then
-			self.WepOwner:SetUsingSpecialWeapon(false)
-		end
-		self.WepOwner:SetActiveWeapon(nil)
-		self.WepOwner:EquipPreviousWeapon()
-	end
-end
-
-function SWEP:GetViewModelPosition( pos, ang )
- 
-	
-	return pos, ang
- 
-end
+function SWEP:GetViewModelPosition(pos, ang) return pos, ang end

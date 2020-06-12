@@ -39,7 +39,5 @@ local player_colors = shuffle{
 	Color(144, 164, 174)
 }
 
-PrintTable(blood_decals)
-
 function player.GetBloodByIndex(index) return blood_decals[(index - 1) % #blood_decals + 1] end
 function player.GetColorByIndex(index) return player_colors[(index - 1) % #player_colors + 1] end
