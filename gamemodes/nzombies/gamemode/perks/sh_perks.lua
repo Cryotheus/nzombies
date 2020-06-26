@@ -5,12 +5,11 @@ function nzPerks:NewPerk(id, data)
 	else
 		data.Func = nil
 	end
+	
 	nzPerks.Data[id] = data
 end
 
-function nzPerks:Get(id)
-	return nzPerks.Data[id]
-end
+function nzPerks:Get(id) return nzPerks.Data[id] end
 
 function nzPerks:GetByName(name)
 	for _, perk in pairs(nzPerks.Data) do

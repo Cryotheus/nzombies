@@ -98,8 +98,8 @@ local function DrawDownedPlayers()
 		if IsValid(ply) then -- If they're outside PVS, don't draw the icon at all
 			if ply == LocalPlayer() then return end
 			
-			local down_time = v.DownTime
-			local down_time_max = v.DownTimeMax
+			local down_time = v.DownTime or 45
+			local down_time_max = v.DownTimeMax or 45
 			local max_time = GetConVar("nz_downtime"):GetFloat()
 			local posxy = (ply:GetPos() + Vector(0, 0, 35)):ToScreen()
 			local dir = ((ply:GetPos() + Vector(0, 0, 35)) - EyeVector() * 2):GetNormal():ToScreen()

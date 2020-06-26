@@ -55,7 +55,8 @@ local trace_ents = {
 				
 				if wep:HasNZModifier("pap") then
 					if wep.NZRePaPText then text = "Press " .. input.LookupBinding("+use") .. " to " .. wep.NZRePaPText .. " for 2000 points."
-					elseif wep:CanRerollPaP() then text = "Press " .. input.LookupBinding("+use") .. " to reroll attachments for 2000 points."
+					elseif wep.NZPaPReplacement then text = "Press " .. input.LookupBinding("+use") .. " to reroll weapon for 2000 points."
+					elseif wep:CanRerollPaP() then text = "Press " .. input.LookupBinding("+use") .. " to waste 2000 points."
 					else text = "This weapon is already upgraded." end
 				else text = "Press " .. input.LookupBinding("+use") .. " to buy Pack-a-Punch for 5000 points." end
 			else

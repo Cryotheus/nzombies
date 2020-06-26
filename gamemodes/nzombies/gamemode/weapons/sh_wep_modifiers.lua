@@ -216,7 +216,7 @@ end
 
 function wepmeta:RevertNZModifier(modifier, blocknetwork)
 	if WeaponModificationFunctions and WeaponModificationFunctions[modifier] then
-		local olds = self.NZModifiers[modifier]
+		local olds = self.NZModifiers and self.NZModifiers[modifier]
 		
 		if olds then
 			for k,v in pairs(olds) do -- Restore all old data!

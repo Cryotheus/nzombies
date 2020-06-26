@@ -5,19 +5,16 @@ ENT.Type = "anim"
 ENT.PrintName		= "random_box_spawns"
 ENT.Author			= "Zet0r"
 ENT.Contact			= "Don't"
-ENT.Purpose			= ""
-ENT.Instructions	= ""
+ENT.Purpose			= "Spawn points for random_box entities."
+ENT.Instructions	= "Created in the nZombies creative mode."
 
 function ENT:Initialize()
-	self:SetModel( "models/nzprops/mysterybox_pile.mdl" )
-	self:SetColor( Color(255, 255, 255) )
-	self:SetMoveType( MOVETYPE_NONE )
-	self:SetSolid( SOLID_VPHYSICS )
-	--self:SetNotSolid(true)
-	--self:SetCollisionGroup( COLLISION_GROUP_DEBRIS_TRIGGER )
-	--self:DrawShadow( false )
-end
-
-if CLIENT then
+	self:SetModel("models/nzprops/mysterybox_pile.mdl")
+	self:SetColor(color_white)
+	self:SetMoveType(MOVETYPE_NONE)
+	self:SetSolid(SOLID_VPHYSICS)
 	
+	self:PhysicsInit(SOLID_VPHYSICS)
+	
+	self:GetPhysicsObject():EnableMotion(false)
 end

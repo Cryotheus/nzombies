@@ -1,6 +1,18 @@
 -- Main Tables
 nzConfig = nzConfig or AddNZModule("Config")
 
+local melee_damage_type = bit.bor(DMG_SLASH, DMG_CLUB)
+
+local function is_melee_damage(damage_type) return bit.band(damage_type, melee_damage_type) > 0 end
+
+local function point_reward(attacker, dmg_type, hit_group)
+	if attacker:IsPlayer() and attacker:GetNotDowned() then
+		if is_melee_damage(dmg_type) then attacker:GivePoints(130)
+		elseif hit_group == HITGROUP_HEAD then attacker:GivePoints(100)
+		else attacker:GivePoints(50) end
+	end
+end
+
 nzConfig.ValidEnemies = {
 	["nz_zombie_walker"] = {
 		Valid = true,
@@ -10,15 +22,7 @@ nzConfig.ValidEnemies = {
 			
 			if attacker:IsPlayer() and attacker:GetNotDowned() then attacker:GivePoints(10) end
 		end,
-		OnKilled = function(zombie, dmginfo, hitgroup)
-			local attacker = dmginfo:GetAttacker()
-			
-			if attacker:IsPlayer() and attacker:GetNotDowned() then
-				if dmginfo:GetDamageType() == DMG_CLUB then attacker:GivePoints(130)
-				elseif hitgroup == HITGROUP_HEAD then attacker:GivePoints(100)
-				else attacker:GivePoints(50) end
-			end
-		end
+		OnKilled = function(zombie, dmginfo, hitgroup) point_reward(dmginfo:GetAttacker(), dmginfo:GetDamageType(), hitgroup) end
 	},
 	["nz_zombie_special_burning"] = {
 		Valid = true,
@@ -28,32 +32,17 @@ nzConfig.ValidEnemies = {
 			
 			if attacker:IsPlayer() and attacker:GetNotDowned() then attacker:GivePoints(10) end
 		end,
-		OnKilled = function(zombie, dmginfo, hitgroup)
-			local attacker = dmginfo:GetAttacker()
-			
-			if attacker:IsPlayer() and attacker:GetNotDowned() then
-				if dmginfo:GetDamageType() == DMG_CLUB then attacker:GivePoints(130)
-				elseif hitgroup == HITGROUP_HEAD then attacker:GivePoints(100)
-				else attacker:GivePoints(50) end
-			end
-		end
+		OnKilled = function(zombie, dmginfo, hitgroup) point_reward(dmginfo:GetAttacker(), dmginfo:GetDamageType(), hitgroup) end
 	},
 	["nz_zombie_special_dog"] = {
 		Valid = true,
 		SpecialSpawn = true,
 		ScaleDMG = function(zombie, hitgroup, dmginfo) if hitgroup == HITGROUP_HEAD then dmginfo:ScaleDamage(2) end end,
 		OnHit = function(zombie, dmginfo, hitgroup) local attacker = dmginfo:GetAttacker() if attacker:IsPlayer() and attacker:GetNotDowned() then attacker:GivePoints(10) end end,
-		OnKilled = function(zombie, dmginfo, hitgroup)
-			local attacker = dmginfo:GetAttacker()
-			
-			if attacker:IsPlayer() and attacker:GetNotDowned() then
-				if dmginfo:GetDamageType() == DMG_CLUB then attacker:GivePoints(130)
-				elseif hitgroup == HITGROUP_HEAD then attacker:GivePoints(100)
-				else attacker:GivePoints(50) end
-			end
-		end
+		OnKilled = function(zombie, dmginfo, hitgroup) point_reward(dmginfo:GetAttacker(), dmginfo:GetDamageType(), hitgroup) end
 	}
 }
+
 nzConfig.WeaponBlackList = {}
 nzConfig.WeaponWhiteList = {"fas2_", "m9k_", "cw_"}
 
@@ -86,7 +75,7 @@ nzConfig.AddWeaponToBlacklist("fas2_base")
 nzConfig.AddWeaponToBlacklist("fas2_ifak")
 nzConfig.AddWeaponToBlacklist("nz_grenade")
 nzConfig.AddWeaponToBlacklist("nz_multi_tool")
-nzConfig.AddWeaponToBlacklist("nz_one_inch_punch") -- Nope! You gotta give this with special map scripts
+nzConfig.AddWeaponToBlacklist("nz_one_inch_punch") -- Nope! You gotta give this with special map scripts --gay
 nzConfig.AddWeaponToBlacklist("nz_perk_bottle")
 nzConfig.AddWeaponToBlacklist("nz_quickknife_crowbar")
 nzConfig.AddWeaponToBlacklist("nz_tool_base")
