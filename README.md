@@ -1,5 +1,7 @@
 nZombies with fixes
 ========
+### Archived because this gamemode is too old for me to handle
+
 A GM13 Nazi Zombies style (WIP) gamemode
 
 This fork will be my attempt at cleaning up the code, and adding some extra nice features.
